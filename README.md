@@ -1,6 +1,7 @@
 # Snowflake Permissions Visualizer
 
 Snowflakeの権限（ロール、ユーザー、テーブル権限）をインタラクティブなD3.jsマップで可視化するWebアプリケーションです。
+<img width="1412" height="886" alt="スクリーンショット 2025-10-15 16 56 51" src="https://github.com/user-attachments/assets/dcdcf99a-7612-4454-a126-6ef345922741" />
 
 ## 機能
 
