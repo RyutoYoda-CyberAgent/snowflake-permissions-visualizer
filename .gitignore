@@ -4,8 +4,6 @@
 # 秘匿データファイル
 permissions_data.json
 permissions_backup_*.json
-changes_log.json
-permissions_monitor.log
 
 # Python関連
 __pycache__/

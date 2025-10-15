@@ -1,22 +1,21 @@
-# Snowflake Permissions Visualizer ❄️
+# Snowflake Permissions Visualizer
 
-Snowflakeの権限（ロール、ユーザー、テーブル権限）をインタラクティブなD3.jsマップで可視化し、権限変更を自動検知・更新するWebアプリケーションです。
+Snowflakeの権限（ロール、ユーザー、テーブル権限）をインタラクティブなD3.jsマップで可視化するWebアプリケーションです。
 
-## ✨ 機能
+## 機能
 
-- **📊 インタラクティブな権限マップ**: D3.jsを使用したドラッグ&ドロップ可能な権限関係図
-- **🔄 リアルタイム更新**: 権限変更を自動検知して表示を更新
-- **🎛️ フィルタリング**: ユーザー、ロール、テーブル別の表示切り替え
-- **🔍 検索機能**: ノード名による絞り込み検索
-- **💡 フォーカス表示**: 選択したノードに関連する権限のみを表示
-- **📱 ダークテーマ**: 見やすい黒ベースのデザイン
-- **📥 データエクスポート**: 権限データのJSON形式でのエクスポート
+- **インタラクティブな権限マップ**: D3.jsを使用したドラッグ&ドロップ可能な権限関係図
+- **フィルタリング**: ユーザー、ロール、テーブル別の表示切り替え
+- **検索機能**: ノード名による絞り込み検索
+- **フォーカス表示**: 選択したノードに関連する権限のみを表示
+- **ダークテーマ**: 見やすい黒ベースのデザイン
+- **データエクスポート**: 権限データのJSON形式でのエクスポート
 
-## 🚀 クイックスタート
+## クイックスタート
 
 ### 1. リポジトリクローン
 ```bash
-git clone <repository-url>
+git clone https://github.com/RyutoYoda-CyberAgent/snowflake-permissions-visualizer.git
 cd snowflake-permissions-visualizer
 ```
 
@@ -53,25 +52,24 @@ python fetch_permissions.py
 python3 -m http.server 8080
 ```
 
-**ブラウザで `http://localhost:8080` にアクセス**
+ブラウザで `http://localhost:8080` にアクセス
 
 詳細なセットアップ手順は [SETUP.md](SETUP.md) をご確認ください。
 
-## 📁 ファイル構成
+## ファイル構成
 
 ```
 snowflake-permissions-visualizer/
 ├── index.html              # メインWebアプリケーション
 ├── app.js                  # D3.js可視化ロジック
 ├── fetch_permissions.py    # Snowflake権限データ取得
-├── auto_refresh.py         # 自動更新監視サービス
 ├── requirements.txt        # Python依存関係
 ├── .env.sample            # 環境変数サンプル
 ├── SETUP.md               # 詳細セットアップガイド
 └── README.md              # このファイル
 ```
 
-## 🎯 使用方法
+## 使用方法
 
 ### ノード操作
 - **クリック**: 詳細表示・関連権限フォーカス
@@ -84,62 +82,27 @@ snowflake-permissions-visualizer/
 - **データ更新**: 最新権限取得
 - **ハイライト解除**: 全体表示復帰
 
-## 🔐 認証方式
-
-### SSO/SAML（推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=externalbrowser
-```
-
-### パスワード認証
-```bash
-SNOWFLAKE_AUTHENTICATOR=snowflake
-SNOWFLAKE_PASSWORD=your_password
-```
-
-### OAuth（本番推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=oauth
-SNOWFLAKE_TOKEN=your_token
-```
-
-### JWT（自動化推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=jwt
-SNOWFLAKE_PRIVATE_KEY=your_private_key
-```
-
-## 🎨 可視化の見方
+## 可視化の見方
 
 ### ノード
-- 🔵 **ユーザー** (青)
-- 🔴 **ロール** (赤)  
-- 🟢 **データベース** (緑)
-- 🟡 **テーブル** (黄)
+- **青色**: ユーザー
+- **赤色**: ロール
+- **緑色**: データベース
+- **黄色**: テーブル
 
 ### リンク
 - **赤線**: 権限付与
 - **水色線**: ロール所属
 
-## 🔄 自動更新
+## データ更新
 
-```bash
-# 別ターミナルで実行
-source venv/bin/activate
-export $(cat .env | xargs)
-python auto_refresh.py
-```
+Webアプリの「データ更新」ボタンをクリックすることで、最新のSnowflake権限情報を取得できます。
 
-## 🛠️ トラブルシューティング
+## セキュリティ
 
-詳細は [SETUP.md](SETUP.md) の「トラブルシューティング」セクションをご参照ください。
+- `.env`ファイルは絶対にコミットしないでください
+- 権限データには機密情報が含まれる可能性があるため、適切に保護してください
 
-## ⚠️ セキュリティ
-
-- `.env`ファイルは**絶対にコミットしない**
-- 本番環境では適切なアクセス制御を実装
-- 権限データは機密情報として適切に保護
-
-## 📄 ライセンス
+## ライセンス
 
 MIT License
