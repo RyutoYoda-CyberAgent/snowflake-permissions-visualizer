@@ -171,10 +171,10 @@ def main():
     connection_params = {
         'user': os.getenv('SNOWFLAKE_USER'),
         'account': os.getenv('SNOWFLAKE_ACCOUNT'),
-        'warehouse': os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
+        'warehouse': os.getenv('SNOWFLAKE_WAREHOUSE', 'WH_NAME'),
         'database': os.getenv('SNOWFLAKE_DATABASE', 'SNOWFLAKE'),
-        'schema': os.getenv('SNOWFLAKE_SCHEMA', 'INFORMATION_SCHEMA'),
-        'role': os.getenv('SNOWFLAKE_ROLE', 'ACCOUNTADMIN'),
+        'schema': os.getenv('SNOWFLAKE_SCHEMA', 'SCHEMA_NAME'),
+        'role': os.getenv('SNOWFLAKE_ROLE', 'ROLE_NAME'),
         'authenticator': os.getenv('SNOWFLAKE_AUTHENTICATOR', 'externalbrowser')
     }
     
