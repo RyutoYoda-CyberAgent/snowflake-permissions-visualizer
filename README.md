@@ -13,13 +13,23 @@ Snowflakeの権限（ロール、ユーザー、テーブル権限）をイン�
 
 ## クイックスタート
 
-### 1. リポジトリクローン
+### 簡単起動（推奨）
 ```bash
 git clone https://github.com/RyutoYoda-CyberAgent/snowflake-permissions-visualizer.git
 cd snowflake-permissions-visualizer
+
+# 初回セットアップ
+make setup
+
+# .envファイルを編集してSnowflake接続情報を設定
+# SNOWFLAKE_USER=your_username
+# SNOWFLAKE_ACCOUNT=your_account
+
+# アプリケーション起動
+make run
 ```
 
-### 2. 環境設定
+### 手動セットアップ
 ```bash
 # 仮想環境作成・有効化
 python3 -m venv venv
@@ -28,27 +38,13 @@ source venv/bin/activate
 # 依存関係インストール
 pip install -r requirements.txt
 
-# 設定ファイル作成
+# 設定ファイル作成と編集
 cp .env.sample .env
-```
+# .envファイルを編集
 
-### 3. Snowflake接続設定
-`.env`ファイルを編集：
-```bash
-SNOWFLAKE_USER=your_username
-SNOWFLAKE_ACCOUNT=your_account
-SNOWFLAKE_AUTHENTICATOR=externalbrowser
-```
-
-### 4. 起動
-```bash
-# 環境変数読み込み
+# 起動
 export $(cat .env | xargs)
-
-# データ取得
 python fetch_permissions.py
-
-# Webアプリ起動
 python3 -m http.server 8080
 ```
 
@@ -65,6 +61,7 @@ snowflake-permissions-visualizer/
 ├── fetch_permissions.py    # Snowflake権限データ取得
 ├── requirements.txt        # Python依存関係
 ├── .env.sample            # 環境変数サンプル
+├── Makefile               # 簡単起動用
 ├── SETUP.md               # 詳細セットアップガイド
 └── README.md              # このファイル
 ```
