@@ -181,6 +181,8 @@ def main():
     # Validate required parameters
     if not connection_params['user']:
         raise ValueError("SNOWFLAKE_USER environment variable is required")
+    if not connection_params['role'] or connection_params['role'] == 'ROLE_NAME':
+        raise ValueError("SNOWFLAKE_ROLE environment variable is required")
     if not connection_params['account']:
         raise ValueError("SNOWFLAKE_ACCOUNT environment variable is required")
     
