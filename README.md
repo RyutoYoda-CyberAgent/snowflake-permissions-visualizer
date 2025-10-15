@@ -15,7 +15,7 @@ Snowflakeの権限（ロール、ユーザー、テーブル権限）をイン�
 
 ### 簡単起動（推奨）
 ```bash
-git clone https://github.com/RyutoYoda-CyberAgent/snowflake-permissions-visualizer.git
+git clone <repository-url>
 cd snowflake-permissions-visualizer
 
 # 初回セットアップ
