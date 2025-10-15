@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake Permissions Visualizer</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            padding: 20px;
+            border: 1px solid #404040;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #3a3a3a;
+            border-radius: 6px;
+            border: 1px solid #505050;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        select, button, input {
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #4a4a4a;
+            color: #e0e0e0;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .refresh-button {
+            background: #28a745;
+        }
+        
+        .refresh-button:hover {
+            background: #1e7e34;
+        }
+        
+        input::placeholder {
+            color: #aaa;
+        }
+        
+        #visualization {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #1e1e1e;
+        }
+        
+        .node {
+            cursor: pointer;
+        }
+        
+        .node.user {
+            fill: #4285f4;
+        }
+        
+        .node.role {
+            fill: #ea4335;
+        }
+        
+        .node.database {
+            fill: #34a853;
+        }
+        
+        .node.table {
+            fill: #fbbc04;
+        }
+        
+        .node.selected {
+            stroke: #333;
+            stroke-width: 3px;
+        }
+        
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 2px;
+        }
+        
+        .link.grant {
+            stroke: #ff6b6b;
+        }
+        
+        .link.membership {
+            stroke: #4ecdc4;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            max-width: 300px;
+            border: 1px solid #555;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-size: 12px;
+            border: 1px solid #555;
+            color: #e0e0e0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-size: 12px;
+            max-width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #555;
+            color: #e0e0e0;
+        }
+        
+        .info-panel h4, .info-panel h5, .info-panel h6 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+        
+        .info-panel ul {
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+        
+        .info-panel li {
+            margin: 3px 0;
+            font-size: 11px;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .status.loading {
+            background: #3a3a00;
+            color: #ffff99;
+            border: 1px solid #666600;
+        }
+        
+        .status.success {
+            background: #003a00;
+            color: #99ff99;
+            border: 1px solid #006600;
+        }
+        
+        .status.error {
+            background: #3a0000;
+            color: #ff9999;
+            border: 1px solid #660000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Snowflake Permissions Visualizer ❄️</h1>
+            <p>インタラクティブな権限マップ - ロール、ユーザー、テーブル権限の可視化</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>表示フィルター:</label>
+                <select id="viewFilter">
+                    <option value="all">すべて表示</option>
+                    <option value="users">ユーザーのみ</option>
+                    <option value="roles">ロールのみ</option>
+                    <option value="tables">テーブル権限</option>
+                </select>
+                
+                <label>検索:</label>
+                <input type="text" id="searchInput" placeholder="ノード名で検索...">
+            </div>
+            
+            <div class="control-group">
+                <button class="refresh-button" onclick="loadPermissionsData()">データ更新</button>
+                <button onclick="resetVisualization()">表示リセット</button>
+                <button onclick="exportData()">データエクスポート</button>
+                <button onclick="toggleNodeDetails()">詳細表示</button>
+                <button onclick="clearHighlights()">ハイライト解除</button>
+            </div>
+        </div>
+        
+        <div id="status" class="status loading">データを読み込み中...</div>
+        
+        <div style="position: relative;">
+            <svg id="visualization"></svg>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4285f4;"></div>
+                    <span>ユーザー</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ea4335;"></div>
+                    <span>ロール</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #34a853;"></div>
+                    <span>データベース</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #fbbc04;"></div>
+                    <span>テーブル</span>
+                </div>
+                <hr>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 2px; background: #ff6b6b; margin-right: 8px;"></div>
+                    <span>権限付与</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 2px; background: #4ecdc4; margin-right: 8px;"></div>
+                    <span>ロール所属</span>
+                </div>
+            </div>
+            
+            <div class="info-panel" id="infoPanel">
+                <h4>情報パネル</h4>
+                <p>ノードをクリックして詳細を表示</p>
+                <div id="nodeInfo"></div>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
