@@ -84,47 +84,6 @@ python3 -m http.server 8080
 http://localhost:8080
 ```
 
-## 7. 自動更新機能（オプション）
-
-権限変更を自動検知する場合は、別ターミナルで：
-
-```bash
-# 仮想環境の有効化（新しいターミナルの場合）
-source venv/bin/activate
-
-# 環境変数の読み込み
-export $(cat .env | xargs)
-
-# 自動監視サービス起動
-python auto_refresh.py
-```
-
-## 認証方式別の設定
-
-### SSO/SAML認証（推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=externalbrowser
-```
-- ブラウザで認証画面が開きます
-- 通常のSnowflakeログインと同様の手順
-
-### パスワード認証
-```bash
-SNOWFLAKE_AUTHENTICATOR=snowflake
-SNOWFLAKE_PASSWORD=your_password
-```
-
-### OAuth認証（本番環境推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=oauth
-SNOWFLAKE_TOKEN=your_oauth_token
-```
-
-### JWT認証（自動化環境推奨）
-```bash
-SNOWFLAKE_AUTHENTICATOR=jwt
-SNOWFLAKE_PRIVATE_KEY=your_private_key_content
-```
 
 ## トラブルシューティング
 
