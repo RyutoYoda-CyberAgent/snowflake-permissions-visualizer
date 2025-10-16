@@ -60,12 +60,24 @@ class SnowflakePermissionsFetcher:
     def get_schemas(self, database: str) -> List[Dict[str, Any]]:
         """Get schemas for a database"""
         query = f"SHOW SCHEMAS IN DATABASE {database}"
-        return self.execute_query(query)
+        try:
+            return self.execute_query(query)
+        except Exception as e:
+            if "Shared Database is no longer available" in str(e) or "共有データベースは使用できなくなりました" in str(e):
+                print(f"Warning: Shared database {database} is no longer available, skipping...")
+                return []
+            raise
     
     def get_tables(self, database: str, schema: str) -> List[Dict[str, Any]]:
         """Get tables for a schema"""
         query = f"SHOW TABLES IN SCHEMA {database}.{schema}"
-        return self.execute_query(query)
+        try:
+            return self.execute_query(query)
+        except Exception as e:
+            if "Shared Database is no longer available" in str(e) or "共有データベースは使用できなくなりました" in str(e):
+                print(f"Warning: Shared database {database} is no longer available, skipping...")
+                return []
+            raise
     
     def get_grants_to_role(self, role: str) -> List[Dict[str, Any]]:
         """Get grants to a specific role"""
@@ -162,6 +174,9 @@ class SnowflakePermissionsFetcher:
                 if table_count >= 50:
                     break
             except Exception as e:
+                if "Shared Database is no longer available" in str(e) or "共有データベースは使用できなくなりました" in str(e):
+                    print(f"Warning: Shared database {db_name} is no longer available, skipping...")
+                    continue
                 print(f"Error fetching schemas for database {db_name}: {e}")
         
         return permissions_data
@@ -171,7 +186,7 @@ def main():
     connection_params = {
         'user': os.getenv('SNOWFLAKE_USER'),
         'account': os.getenv('SNOWFLAKE_ACCOUNT'),
-        'warehouse': os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
+        'warehouse': os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_M_WH'),
         'database': os.getenv('SNOWFLAKE_DATABASE', 'SNOWFLAKE'),
         'schema': os.getenv('SNOWFLAKE_SCHEMA', 'INFORMATION_SCHEMA'),
         'role': os.getenv('SNOWFLAKE_ROLE', 'ROLE_NAME'),
